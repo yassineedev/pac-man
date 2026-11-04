@@ -1,0 +1,5 @@
+pygame>=2.5,<3
+flake8>=7,<8
+mypy>=1.10,<2
+pytest>=8,<10
+pyinstaller>=6,<7
