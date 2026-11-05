@@ -16,14 +16,49 @@ class MazeGeneratorPanel:
 
         self.maze = None
 
-    def make_maze(self, level: int, seed: int | None = None):
-        """Ask the external tool for a maze."""
+    """Connect our game to the required maze generator."""
+
+from mazegenerator import MazeGenerator
+
+
+class MazeGeneratorError(Exception):
+    """Error when maze generation fails."""
+
+
+class MazeGeneratorPanel:
+    """Use the external maze generator."""
+
+    def __init__(self, size: tuple[int, int], seed: int = 42):
+        self.size = size
+        self.seed = seed
+        self.maze: list[list[int]] = []
+
+    def make_maze(
+        self,
+        level: int,
+        seed: int | None = None
+    ) -> list[list[int]]:
+        """Generate a maze for the given level."""
+
         try:
-            maze_generator = MazeGenerator(
-                seed=self.seed
+            if seed is not None:
+                current_seed = seed
+            elif level == 1:
+                current_seed = self.seed
+            else:
+                current_seed = 0
+
+            generator = MazeGenerator(
+                size=self.size,
+                perfect=False,
+                seed=current_seed
             )
-            maze_generator.generate(self.seed)
-            self.maze = maze_generator.maze
+
+            self.maze = generator.maze
+
             return self.maze
+
         except Exception as e:
-            raise MazeGenerartorError(f"MazeGeneratorError: {e}")
+            raise MazeGeneratorError(
+                f"Maze generation failed: {e}"
+            ) from e
