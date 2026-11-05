@@ -20,6 +20,12 @@ class Maze:
         self.grid: list[list[int]] = []
 
         self.generator = MazeGeneratorPanel((width, height))
+        self.directions = {
+            "UP": self.NORTH,
+            "RIGHT": self.EAST,
+            "DOWN": self.SOUTH,
+            "LEFT": self.WEST,
+        }
 
     def generate(self, seed: int = 0) -> None:
         """Generate a maze using the given seed."""
@@ -35,22 +41,46 @@ class Maze:
             raise ValueError("No grid found, Maze not generated.")
         if not self.is_inside(x, y):
             raise ValueError("X or Y is outsid of the grid.")
-        directions = {
-            "UP": self.NORTH,
-            "RIGHT": self.EAST,
-            "DOWN": self.SOUTH,
-            "LEFT": self.WEST,
-        }
-        if direction not in directions:
+
+        if direction not in self.directions:
             raise ValueError("direction not in dirictions, please check again.")
-        cell = self.grid[x][y]
-        wall = directions[direction]
+        cell = self.grid[y][x]
+        wall = self.directions[direction]
         return bool(cell & wall)
 
     def can_move(self, x: int, y: int, direction: str) -> bool:
         """Check if movement is allowed."""
-        pass
+        if direction not in self.directions:
+            return False
+        if not self.is_inside(x, y):
+            return False
+        movements = {
+            "UP": (0, -1),
+            "DOWN": (0, 1),
+            "RIGHT": (1, 0),
+            "LEFT": (-1, 0)
+        }
+        mx, my = movements[direction]
+        new_x = x + mx
+        new_y = y + my
+        if not self.is_inside(new_x, new_y):
+            return False
+        return not self.has_wall(x, y, direction)
 
     def get_neighbors(self, x: int, y: int) -> list[tuple[int, int]]:
         """Return all reachable neighboring cells."""
-        pass
+        neighbors = []
+        movements = {
+            "UP": (0, -1),
+            "DOWN": (0, 1),
+            "RIGHT": (1, 0),
+            "LEFT": (-1, 0)
+        }
+        for drs in movements:
+            if not self.can_move(x, y, drs):
+                continue
+            mx, my = movements[drs]
+            new_x = x + mx
+            new_y = y + my
+            neighbors.append((new_x, new_y))
+        return neighbors
