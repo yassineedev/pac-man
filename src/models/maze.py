@@ -27,11 +27,25 @@ class Maze:
 
     def is_inside(self, x: int, y: int) -> bool:
         """Check if a position is inside the maze."""
-        pass
+        return True if 0 <= x < self.width and 0 <= y < self.height else False
 
     def has_wall(self, x: int, y: int, direction: str) -> bool:
         """Check if a wall exists in a direction."""
-        pass
+        if not self.grid:
+            raise ValueError("No grid found, Maze not generated.")
+        if not self.is_inside(x, y):
+            raise ValueError("X or Y is outsid of the grid.")
+        directions = {
+            "UP": self.NORTH,
+            "RIGHT": self.EAST,
+            "DOWN": self.SOUTH,
+            "LEFT": self.WEST,
+        }
+        if direction not in directions:
+            raise ValueError("direction not in dirictions, please check again.")
+        cell = self.grid[x][y]
+        wall = directions[direction]
+        return bool(cell & wall)
 
     def can_move(self, x: int, y: int, direction: str) -> bool:
         """Check if movement is allowed."""

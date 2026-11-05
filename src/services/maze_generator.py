@@ -2,9 +2,8 @@
 from mazegenerator import MazeGenerator
 
 
-from src.models.maze import Maze
 
-class MazeGenerartorError(Exception):
+class MazeGeneratorError(Exception):
     def __init__(self, *args):
         super().__init__(*args)
 
@@ -12,7 +11,7 @@ class MazeGenerartorError(Exception):
 class MazeGeneratorPanel:
     """Use the external maze generator."""
 
-    def __init__(self, width: int = 15, height: int = 15, seed: int = 42) -> Maze:
+    def __init__(self, width: int = 15, height: int = 15, seed: int = 42) -> list:
         self.width = width
         self.height = height
         self.seed = seed
