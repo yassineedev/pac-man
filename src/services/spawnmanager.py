@@ -29,14 +29,56 @@ class SpawnManager:
                     new_x = x + posx
                     protected_cells.add((new_x, new_y))
         return protected_cells
+
     def find_player_spawn(self) -> set[int, int]:
         """find the start position of the player."""
         if not self.maze.grid:
             raise ValueError("no grid inserted to get start position method.")
         mid_x = self.width // 2
         mid_y = self.height // 2
-        # handle odd x odd
+        protected_cell = self.__get_protected_cells()
+        # handle even x even
         if self.width % 2 == 0 and self.height % 2 == 0:
+            if not protected_cell or (mid_x, mid_y) not in protected_cell:
+                return (mid_x, mid_y)
+        # handle odd x odd
+        elif self.width % 2 == 1 and self.height % 2 == 1:
+            positions = [
+                (mid_x - 1, mid_y),
+                (mid_x, mid_y),
+                (mid_x - 1, mid_y - 1),
+                (mid_x, mid_y - 1),
+            ]
+            if (mid_x, mid_y) in protected_cell:
+                for p in positions:
+                    if p in protected_cell:
+                        continue
+                    return p
+            return (mid_x, mid_y)
+        # odd even
+        elif self.width % 2 == 1 and self.height % 2 == 0:
+            positions = [
+                (mid_x - 1, mid_y),
+                (mid_x, mid_y),
+            ]
+            if (mid_x, mid_y) in protected_cell:
+                for p in positions:
+                    if p not in protected_cell:
+                        return p
+            return (mid_x, mid_y)
+        # even x odd
+        else:
+            positions = [
+                (mid_x, mid_y - 1),
+                (mid_x, mid_y)
+            ]
+            if (mid_x, mid_y) in protected_cell:
+                for p in positions:
+                    if p not in protected_cell:
+                        return p
+            return (mid_x, mid_y)
+        # this return is for testing if the programe not goes in the if stmnts.
+        return "Yassine"
 
     def find_ghost_spawn(self):
         """find the start position of each ghost."""
