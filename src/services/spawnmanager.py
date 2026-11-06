@@ -28,7 +28,7 @@ class SpawnManager:
                     new_y = y + posy
                     new_x = x + posx
                     protected_cells.add((new_x, new_y))
-
+        return protected_cells
     def find_player_spawn(self) -> set[int, int]:
         """find the start position of the player."""
         if not self.maze.grid:
