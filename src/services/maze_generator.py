@@ -11,7 +11,7 @@ class MazeGeneratorError(Exception):
 class MazeGeneratorPanel:
     """Use the external maze generator."""
 
-    def __init__(self, width: int = 15, height: int = 15, seed: int = 42) -> list:
+    def __init__(self, width: int = 15, height: int = 15, seed: int = 42) -> None:
         self.width = width
         self.height = height
         self.seed = seed
@@ -31,9 +31,10 @@ class MazeGeneratorPanel:
                 current_seed = self.seed
             else:
                 current_seed = 0
-
+            s = (self.width, self.height)
+            print("WIDTH:", self.width, "HEIGHT:", self.height)
             generator = MazeGenerator(
-                size=(self.width, self.height),
+                size=s,
                 perfect=False,
                 seed=current_seed
             )

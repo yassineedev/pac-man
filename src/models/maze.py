@@ -19,7 +19,7 @@ class Maze:
 
         self.grid: list[list[int]] = []
 
-        self.generator = MazeGeneratorPanel((width, height))
+        self.generator = MazeGeneratorPanel(width, height)
         self.directions = {
             "UP": self.NORTH,
             "RIGHT": self.EAST,

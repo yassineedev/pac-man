@@ -1,14 +1,13 @@
-from models.maze import Maze
+# from .src.models.maze import Maze
 
 
 class SpawnManager:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.maze: Maze = None
+    def __init__(self, maze):
+        self.maze = maze
+        self.width = self.maze.width
+        self.height = self.maze.height
 
-
-    def __get_protected_cells(self) -> None | list[set[int, int]]:
+    def get_protected_cells(self) -> None | list[set[int, int]]:
         """get protected 42 cells to using giving layouts"""
         ft_small = [
             [1, 0, 0, 0, 1, 1, 1],
@@ -22,63 +21,65 @@ class SpawnManager:
         protected_cells = set()
         posy = int((self.maze.height - len(ft_small)) / 2)
         posx = int((self.maze.width - len(ft_small[0])) / 2)
-        for y in range(self.maze.height):
-            for x in range(len(self.maze.width)):
+        for y in range(len(ft_small)):
+            for x in range(len(ft_small[y])):
                 if ft_small[y][x]:
                     new_y = y + posy
                     new_x = x + posx
                     protected_cells.add((new_x, new_y))
         return protected_cells
 
-    def find_player_spawn(self) -> set[int, int]:
-        """find the start position of the player."""
+    def find_player_spawn(self) -> tuple[int, int]:
+        """Find the starting position of Pac-Man."""
+
         if not self.maze.grid:
-            raise ValueError("no grid inserted to get start position method.")
+            raise ValueError("Maze not generated.")
+
         mid_x = self.width // 2
         mid_y = self.height // 2
-        protected_cell = self.__get_protected_cells()
-        # handle even x even
-        if self.width % 2 == 0 and self.height % 2 == 0:
-            if not protected_cell or (mid_x, mid_y) not in protected_cell:
-                return (mid_x, mid_y)
-        # handle odd x odd
-        elif self.width % 2 == 1 and self.height % 2 == 1:
+
+        protected_cells = self.get_protected_cells()
+
+        # Case 1: Odd X, Odd Y
+        if self.width % 2 == 1 and self.height % 2 == 1:
+            positions = [
+                (mid_x, mid_y),
+            ]
+
+        # Case 2: Even X, Even Y
+        elif self.width % 2 == 0 and self.height % 2 == 0:
             positions = [
                 (mid_x - 1, mid_y),
                 (mid_x, mid_y),
                 (mid_x - 1, mid_y - 1),
                 (mid_x, mid_y - 1),
             ]
-            if (mid_x, mid_y) in protected_cell:
-                for p in positions:
-                    if p in protected_cell:
-                        continue
-                    return p
-            return (mid_x, mid_y)
-        # odd even
+
+        # Case 3: Odd X, Even Y
         elif self.width % 2 == 1 and self.height % 2 == 0:
+            positions = [
+                (mid_x, mid_y - 1),
+                (mid_x, mid_y),
+            ]
+
+        # Case 4: Even X, Odd Y
+        elif self.width % 2 == 0 and self.height % 2 == 1:
             positions = [
                 (mid_x - 1, mid_y),
                 (mid_x, mid_y),
             ]
-            if (mid_x, mid_y) in protected_cell:
-                for p in positions:
-                    if p not in protected_cell:
-                        return p
-            return (mid_x, mid_y)
-        # even x odd
+
+        # maze to small
         else:
             positions = [
-                (mid_x, mid_y - 1),
                 (mid_x, mid_y)
             ]
-            if (mid_x, mid_y) in protected_cell:
-                for p in positions:
-                    if p not in protected_cell:
-                        return p
-            return (mid_x, mid_y)
-        # this return is for testing if the programe not goes in the if stmnts.
-        return "Yassine"
+        for position in positions:
+            if not protected_cells:
+                return (mid_x, mid_y)
+            if position not in protected_cells:
+                return position
+
 
     def find_ghost_spawn(self):
         """find the start position of each ghost."""
