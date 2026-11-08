@@ -80,8 +80,14 @@ class SpawnManager:
             if position not in protected_cells:
                 return position
 
-
-    def find_ghost_spawn(self):
+    def find_ghost_spawn(self) -> dict[str, set]:
         """find the start position of each ghost."""
-        if not self.grid:
+        if not self.maze.grid or not self.height or not self.width:
             raise ValueError("No grid found to get start ghosts position start.")
+        ghost_sets = {
+            "ghost_0": (0, 0),
+            "ghost_1": (0, self.height - 1),
+            "ghost_2": (self.width - 1, 0),
+            "ghost_3": (self.width - 1, self.height - 1)
+        }
+        return ghost_sets

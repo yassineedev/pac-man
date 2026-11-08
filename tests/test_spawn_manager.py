@@ -8,17 +8,18 @@ def test_player_spawn(width: int, height: int) -> None:
     """Test player spawn for different maze sizes."""
 
     maze = Maze(width, height)
-    maze.generate(seed=42)
+    maze.generate(seed=0)
 
     spawn_manager = SpawnManager(maze)
     spawn = spawn_manager.find_player_spawn()
 
     # Handle None when the maze is too small.
     protected = spawn_manager.get_protected_cells() or set()
-
+    ghosts_location = spawn_manager.find_ghost_spawn()
     print(f"\nMaze: {width}x{height}")
     print(f"Player spawn: {spawn}")
     print(f"Protected: {spawn in protected}")
+    print(f"Ghosts: {ghosts_location}")
 
     assert isinstance(spawn, tuple)
     assert len(spawn) == 2
