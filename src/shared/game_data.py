@@ -1,56 +1,44 @@
-"""Simple data shared by the game engine and the UI."""
-
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
+
+
+class Direction(Enum):
+    UP = "UP"
+    DOWN = "DOWN"
+    LEFT = "LEFT"
+    RIGHT = "RIGHT"
 
 
 @dataclass(frozen=True)
 class Position:
-    """One place in the maze."""
-
     x: int
     y: int
 
 
-class Direction(Enum):
-    """Four ways to move."""
-
-    UP = "up"
-    DOWN = "down"
-    LEFT = "left"
-    RIGHT = "right"
-
-
-class GameStatus(Enum):
-    """The current game screen or state."""
-
-    MENU = "menu"
-    PLAYING = "playing"
-    PAUSED = "paused"
-    GAME_OVER = "game_over"
-    WIN = "win"
-
-
-@dataclass
-class GhostData:
-    """Data the UI needs to draw one ghost."""
-
+@dataclass(frozen=True)
+class PlayerData:
     position: Position
-    color: str
-    can_be_eaten: bool = False
+    direction: Direction
 
 
-@dataclass
+@dataclass(frozen=True)
+class GhostData:
+    name: str
+    position: Position
+    direction: Direction
+    state: str
+
+
+@dataclass(frozen=True)
 class GameData:
-    """Data the UI needs to draw the game."""
-
-    player: Position = Position(0, 0)
-    ghosts: list[GhostData] = field(default_factory=list)
-    walls: list[Position] = field(default_factory=list)
-    pacgums: list[Position] = field(default_factory=list)
-    big_pacgums: list[Position] = field(default_factory=list)
-    score: int = 0
-    lives: int = 3
-    level: int = 1
-    time_left: float = 0.0
-    status: GameStatus = GameStatus.MENU
+    maze: tuple[tuple[int, ...], ...]
+    player: PlayerData
+    ghosts: tuple[GhostData, ...]
+    pacgums: tuple[Position, ...]
+    power_pacgums: tuple[Position, ...]
+    score: int
+    lives: int
+    level: int
+    time_left: float
+    state: str
+    cheat_mode: bool

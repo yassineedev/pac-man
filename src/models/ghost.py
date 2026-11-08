@@ -1,41 +1,41 @@
-"""Ghost classes with simple polymorphism."""
-
-from abc import ABC, abstractmethod
+import random
 
 from src.shared.game_data import Direction, Position
+from .character import Character
 
 
-class Ghost(ABC):
-    """A base class for every ghost."""
+class Ghost(Character):
+    """Base class for ghosts."""
 
     def __init__(self, start: Position, color: str) -> None:
-        pass
-
-    @abstractmethod
-    def choose_direction(self, player: Position) -> Direction:
-        """Choose where to move next."""
-        pass
-
-    def move(self, direction: Direction) -> None:
-        """Move the ghost."""
-        pass
-
-    def return_to_start(self) -> None:
-        """Move the ghost back to the start."""
-        pass
+        super().__init__(start)
+        self.color = color
 
 
 class FollowGhost(Ghost):
-    """A ghost that follows the player."""
+    """Ghost that follows Pac-Man."""
 
-    def choose_direction(self, player: Position) -> Direction:
-        """Choose a path toward the player."""
-        pass
+    def choose_move(self, maze, player_position: Position) -> Direction:
+        """Choose direction toward Pac-Man."""
+        # BFS implementation comes later.
+        return self.direction
 
 
 class RandomGhost(Ghost):
-    """A ghost that can pick different paths."""
+    """Ghost that chooses random directions."""
 
-    def choose_direction(self, player: Position) -> Direction:
-        """Choose a path."""
-        pass
+    def choose_move(self, maze, player_position: Position) -> Direction:
+        """Choose a random valid direction."""
+        directions = list(Direction)
+
+        valid = [
+            direction
+            for direction in directions
+            if maze.can_move(
+                self.position.x,
+                self.position.y,
+                direction.value
+            )
+        ]
+
+        return random.choice(valid) if valid else self.direction
