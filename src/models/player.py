@@ -21,7 +21,6 @@ class Player(Character):
     # forced method for direction moves.
     def choose_move(self, direction: Direction) -> None:
         """Move the player in one direction."""
-        self.input_direction = direction
         return self.input_direction
 
     # this method return the player to the start position.
@@ -35,5 +34,7 @@ class Player(Character):
         if self.lives > 0:
             self.lives -= 1
 
-    def add_score() -> None:
+    def add_score(self, points: int) -> None:
         """Add scoore for each ghost called"""
+        if points > 0:
+            self.score += points
