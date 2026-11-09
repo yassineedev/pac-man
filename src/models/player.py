@@ -7,22 +7,33 @@ from .character import Character
 class Player(Character):
     """Keep the player's place and movement."""
 
-    def __init__(self, start: Position) -> None:
-        super.__init__(start, Direction.LEFT)
-        self.lives = 0
+    def __init__(
+            self,
+            start: Position,
+            direction: Direction,
+            lives: int
+    ) -> None:
+        super().__init__(start, direction)
+        self.lives = lives
         self.score = 0
+        self.input_direction: Direction = direction
 
     # forced method for direction moves.
     def choose_move(self, direction: Direction) -> None:
         """Move the player in one direction."""
-        pass
+        self.input_direction = direction
+        return self.input_direction
 
     # this method return the player to the start position.
     def return_to_start(self) -> None:
         """Move the player back to the start."""
-        pass
+        self.position = self.start_position
 
     # lose life method if the player killed by the ghost.
-    def lose_life():
+    def lose_life(self) -> None:
         """ Lose one life if the player dead"""
-        pass
+        if self.lives > 0:
+            self.lives -= 1
+
+    def add_score() -> None:
+        """Add scoore for each ghost called"""
