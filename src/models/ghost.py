@@ -20,6 +20,17 @@ class FollowGhost(Ghost):
         # BFS implementation comes later.
         return self.direction
 
+    def make_weak(self):
+        """Make the Ghost weak if the player chase the ghost."""
+        pass
+
+    def get_eaten(self):
+        """ghost get eaten by pac man (the player)"""
+
+    def reset(self):
+        """go to start"""
+        pass
+
 
 class RandomGhost(Ghost):
     """Ghost that chooses random directions."""
