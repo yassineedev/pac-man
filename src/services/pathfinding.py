@@ -2,6 +2,7 @@ from collections import deque
 from src.models.maze import Maze
 from src.shared.game_data import Position
 
+
 class BFS:
     def find_path(
             self,
@@ -18,17 +19,27 @@ class BFS:
         previous = {
             start: None
         }
+        found = False
+
         while queue:
             current: Position = queue.popleft()
             neighbs = maze.get_neighbors(current.x, current.y)
             visite_order.append(current)
             if current == target:
+                found = True
                 break
-            for x, y in neighbs:
-                n = Position(x, y)
+            for n in neighbs:
                 if n not in visited:
                     visited.add(n)
                     previous[n] = current
                     queue.append(n)
         # here i should build the previos path
-        
+        if not found:
+            return None
+        current: Position = target
+        path = []
+        while current is not None:
+            path.append(current)
+            current = previous[current]
+        path.reverse()
+        return path

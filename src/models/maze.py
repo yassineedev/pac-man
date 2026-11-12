@@ -1,6 +1,7 @@
 """Manage the maze and its movement rules."""
 
 from src.services.maze_generator import MazeGeneratorPanel
+from src.shared.game_data import Position
 
 
 class Maze:
@@ -82,5 +83,8 @@ class Maze:
             mx, my = movements[drs]
             new_x = x + mx
             new_y = y + my
-            neighbors.append((new_x, new_y))
+            neighbors.append(Position(
+                new_x,
+                new_y
+            ))
         return neighbors
