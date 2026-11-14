@@ -63,7 +63,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--snapshot", type=Path, help="Save the initial frame and exit")
     args = parser.parse_args()
-    width, height = 10, 10
+    width, height = 25, 25
     seed = 42
     pygame.init()
     cell = min(

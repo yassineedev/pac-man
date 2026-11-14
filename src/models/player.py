@@ -18,8 +18,8 @@ class Player(Character):
         self.score = 0
         self.input_direction: Direction = direction
 
-    # forced method for direction moves.
-    def choose_move(self, direction: Direction) -> None:
+    # The player direction is selected by input before this method is called.
+    def choose_move(self, player_position: Position) -> Direction:
         """Move the player in one direction."""
         return self.input_direction
 

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from src.shared.game_data import Direction, Position
+from src.models.maze import Maze
 
 
 class Character(ABC):
@@ -12,11 +13,11 @@ class Character(ABC):
         self.direction = direction
 
     @abstractmethod
-    def choose_move(self, maze, player_position: Position) -> Direction:
+    def choose_move(self, player_position: Position) -> Direction:
         """Choose the next direction."""
         pass
 
-    def move(self, direction: Direction, maze) -> None:
+    def move(self, direction: Direction, maze: Maze) -> None:
         """Move one cell if there is no wall."""
         x, y = self.position.x, self.position.y
 

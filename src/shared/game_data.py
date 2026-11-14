@@ -9,6 +9,12 @@ class Direction(Enum):
     RIGHT = "RIGHT"
 
 
+class GhostStatu(Enum):
+    WEAK = "WEAK"
+    EATEN = "EATEN"
+    NORMAL = "NORMAL"
+
+
 @dataclass(frozen=True)
 class Position:
     x: int

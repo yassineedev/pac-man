@@ -1,4 +1,5 @@
 # from .src.models.maze import Maze
+from src.shared.game_data import Position
 
 
 class SpawnManager:
@@ -29,7 +30,7 @@ class SpawnManager:
                     protected_cells.add((new_x, new_y))
         return protected_cells
 
-    def find_player_spawn(self) -> tuple[int, int]:
+    def find_player_spawn(self) -> Position:
         """Find the starting position of Pac-Man."""
 
         if not self.maze.grid:
@@ -75,19 +76,17 @@ class SpawnManager:
                 (mid_x, mid_y)
             ]
         for position in positions:
-            if not protected_cells:
-                return (mid_x, mid_y)
-            if position not in protected_cells:
-                return position
+            if not protected_cells or position not in protected_cells:
+                return Position(*position)
 
-    def find_ghost_spawn(self) -> dict[str, set]:
+    def find_ghost_spawn(self) -> dict[str, Position]:
         """find the start position of each ghost."""
         if not self.maze.grid or not self.height or not self.width:
             raise ValueError("No grid found to get start ghosts position start.")
         ghost_sets = {
-            "ghost_0": (0, 0),
-            "ghost_1": (0, self.height - 1),
-            "ghost_2": (self.width - 1, 0),
-            "ghost_3": (self.width - 1, self.height - 1)
+            "ghost_0": Position(0, 0),
+            "ghost_1": Position(0, self.height - 1),
+            "ghost_2": Position(self.width - 1, 0),
+            "ghost_3": Position(self.width - 1, self.height - 1)
         }
         return ghost_sets
