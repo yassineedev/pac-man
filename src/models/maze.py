@@ -1,5 +1,3 @@
-"""Manage the maze and its movement rules."""
-
 from src.services.maze_generator import MazeGeneratorPanel
 from src.shared.game_data import Position
 
@@ -21,7 +19,7 @@ class Maze:
         self.grid: list[list[int]] = []
 
         self.generator = MazeGeneratorPanel(width, height)
-        self.directions = {
+        self.directions: dict[str, int] = {
             "UP": self.NORTH,
             "RIGHT": self.EAST,
             "DOWN": self.SOUTH,
@@ -41,10 +39,12 @@ class Maze:
         if not self.grid:
             raise ValueError("No grid found, Maze not generated.")
         if not self.is_inside(x, y):
-            raise ValueError("X or Y is outsid of the grid.")
+            raise ValueError("X or Y is outside of the grid.")
 
         if direction not in self.directions:
-            raise ValueError("direction not in dirictions, please check again.")
+            raise ValueError(
+                "direction is not valid, please check again."
+            )
         cell = self.grid[y][x]
         wall = self.directions[direction]
         return bool(cell & wall)
@@ -59,7 +59,7 @@ class Maze:
             "UP": (0, -1),
             "DOWN": (0, 1),
             "RIGHT": (1, 0),
-            "LEFT": (-1, 0)
+            "LEFT": (-1, 0),
         }
         mx, my = movements[direction]
         new_x = x + mx
@@ -68,14 +68,14 @@ class Maze:
             return False
         return not self.has_wall(x, y, direction)
 
-    def get_neighbors(self, x: int, y: int) -> list[tuple[int, int]]:
+    def get_neighbors(self, x: int, y: int) -> list[Position]:
         """Return all reachable neighboring cells."""
         neighbors = []
         movements = {
             "UP": (0, -1),
             "DOWN": (0, 1),
             "RIGHT": (1, 0),
-            "LEFT": (-1, 0)
+            "LEFT": (-1, 0),
         }
         for drs in movements:
             if not self.can_move(x, y, drs):
@@ -83,8 +83,5 @@ class Maze:
             mx, my = movements[drs]
             new_x = x + mx
             new_y = y + my
-            neighbors.append(Position(
-                new_x,
-                new_y
-            ))
+            neighbors.append(Position(new_x, new_y))
         return neighbors

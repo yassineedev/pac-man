@@ -2,6 +2,7 @@
 
 from src.models.maze import Maze
 from src.services.spawnmanager import SpawnManager
+from src.shared.game_data import Position
 
 
 def test_spawn_positions() -> None:
@@ -18,13 +19,16 @@ def test_spawn_positions() -> None:
         protected = spawn_manager.get_protected_cells() or set()
 
         assert player_spawn not in protected
-        assert spawn_manager.is_valid_spawn(player_spawn)
+        assert maze.is_inside(player_spawn.x, player_spawn.y)
+        assert len(maze.get_neighbors(player_spawn.x, player_spawn.y)) > 0
         assert len(ghosts) == 4
         assert len(set(ghosts.values())) == 4
         assert player_spawn not in ghosts.values()
 
         for ghost_spawn in ghosts.values():
-            assert spawn_manager.is_valid_spawn(ghost_spawn)
+            assert isinstance(ghost_spawn, Position)
+            assert maze.is_inside(ghost_spawn.x, ghost_spawn.y)
+            assert len(maze.get_neighbors(ghost_spawn.x, ghost_spawn.y)) > 0
 
 
 if __name__ == "__main__":
