@@ -1,4 +1,5 @@
 from src.models.maze import Maze
+from src.shared.game_data import Position
 
 # def test_has_wall() -> None:
 #     maze = Maze(21, 21)
@@ -105,17 +106,17 @@ def test_get_neighbors() -> None:
     ]
 
     # RIGHT blocked, UP and LEFT outside.
-    assert maze.get_neighbors(0, 0) == [(0, 1)]
+    assert maze.get_neighbors(0, 0) == [Position(0, 1)]
 
     # LEFT blocked, UP outside.
-    assert maze.get_neighbors(1, 0) == [(1, 1), (2, 0)]
+    assert maze.get_neighbors(1, 0) == [Position(1, 1), Position(2, 0)]
 
     # All four directions are open.
     assert maze.get_neighbors(1, 1) == [
-        (1, 0),
-        (1, 2),
-        (2, 1),
-        (0, 1)
+        Position(1, 0),
+        Position(1, 2),
+        Position(2, 1),
+        Position(0, 1)
     ]
 
     # Invalid position has no neighbors.
