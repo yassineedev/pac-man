@@ -12,10 +12,10 @@ from pathlib import Path
 # Allow launching this tester by its absolute path from any directory.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import pygame
+import pygame  # noqa: E402
 
-from src.models.maze import Maze
-from src.services.spawnmanager import SpawnManager
+from src.models.maze import Maze  # noqa: E402
+from src.services.spawnmanager import SpawnManager  # noqa: E402
 
 CELL = 22
 TOP = 72
@@ -27,7 +27,7 @@ BACKGROUND = (12, 16, 30)
 FLOOR_COLOR = (23, 29, 46)
 
 # The maze generator uses wall bitmasks: N=1, E=2, S=4, W=8.
-WALLS = ((1, (0, 0, 1, 0)), (2, (1, 0, 1, 1)), (4, (0, 1, 1, 1)), (8, (0, 0, 0, 1)))
+WALLS = ((1, (0, 0, 1, 0)), (2, (1, 0, 1, 1)), (4, (0, 1, 1, 1)), (8, (0, 0, 0, 1)))  # noqa: E501
 MOVES = {
     pygame.K_UP: ("UP", 0, -1),
     pygame.K_w: ("UP", 0, -1),
@@ -47,27 +47,40 @@ def get_ghost_spawns(manager, maze):
             method = getattr(target, name, None)
             if callable(method):
                 return method()
-    raise AttributeError("Could not find find_ghost_spawn() on SpawnManager or Maze")
+    raise AttributeError(  # noqa: E501
+        "Could not find find_ghost_spawn() on SpawnManager or Maze"
+    )
 
 
 def create_world(width, height, seed):
     maze = Maze(width, height)
     maze.generate(seed=seed)
     manager = SpawnManager(maze)
-    player = manager.find_player_spawn()
-    ghosts = get_ghost_spawns(manager, maze)
+    player_position = manager.find_player_spawn()
+    player = (player_position.x, player_position.y)
+    ghost_positions = get_ghost_spawns(manager, maze)
+    ghosts = {
+        name: (position.x, position.y)
+        for name, position in ghost_positions.items()
+    }
     return maze, player, ghosts
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--snapshot", type=Path, help="Save the initial frame and exit")
+    parser.add_argument(
+        "--snapshot",
+        type=Path,
+        help="Save the initial frame and exit",
+    )
     args = parser.parse_args()
     width, height = 25, 25
     seed = 42
     pygame.init()
     cell = min(
-        CELL, (MAX_WIDTH - 32) // width, (MAX_HEIGHT - TOP - BOTTOM - 32) // height
+        CELL,
+        (MAX_WIDTH - 32) // width,
+        (MAX_HEIGHT - TOP - BOTTOM - 32) // height,
     )
     if cell < 6:
         raise ValueError("Maze too large for this viewer")
@@ -84,13 +97,19 @@ def main():
         (x, y)
         for y in range(height)
         for x in range(width)
-        if maze.grid[y][x] != 15 and (x, y) != player and (x, y) not in ghosts.values()
+        if maze.grid[y][x] != 15
+        and (x, y) != player
+        and (x, y) not in ghosts.values()
     }
     score = 0
-    lives = 3
     steps = 0
     origin_x, origin_y = 16, TOP
-    ghost_colors = [(245, 88, 88), (255, 171, 204), (100, 227, 255), (255, 188, 97)]
+    ghost_colors = [
+        (245, 88, 88),
+        (255, 171, 204),
+        (100, 227, 255),
+        (255, 188, 97),
+    ]
     running = True
 
     while running:
@@ -123,35 +142,87 @@ def main():
                             score += 10
 
         screen.fill(BACKGROUND)
-        screen.blit(font.render("Pac-Man | Initial engine state", True, (240, 240, 255)), (16, 12))
-        screen.blit(small.render(f"Seed request: {seed}   Score: {score}   Steps: {steps}", True, (180, 190, 210)), (16, 42))
+        screen.blit(
+            font.render(
+                "Pac-Man | Initial engine state",
+                True,
+                (240, 240, 255),
+            ),
+            (16, 12),
+        )
+        screen.blit(
+            small.render(
+                f"Seed request: {seed}   Score: {score}   Steps: {steps}",
+                True,
+                (180, 190, 210),
+            ),
+            (16, 42),
+        )
         for y, row in enumerate(maze.grid):
             for x, walls in enumerate(row):
                 px, py = origin_x + x * cell, origin_y + y * cell
                 pygame.draw.rect(screen, FLOOR_COLOR, (px, py, cell, cell))
                 if walls == 15:
-                    pygame.draw.rect(screen, WALL_COLOR, (px + 2, py + 2, cell - 3, cell - 3))
+                    pygame.draw.rect(
+                        screen,
+                        WALL_COLOR,
+                        (px + 2, py + 2, cell - 3, cell - 3),
+                    )
                 else:
                     for mask, (x1, y1, x2, y2) in WALLS:
                         if walls & mask:
-                            pygame.draw.line(screen, WALL_COLOR,
-                                             (px + x1 * cell, py + y1 * cell),
-                                             (px + x2 * cell, py + y2 * cell), 2)
+                            pygame.draw.line(
+                                screen,
+                                WALL_COLOR,
+                                (px + x1 * cell, py + y1 * cell),
+                                (px + x2 * cell, py + y2 * cell),
+                                2,
+                            )
         for x, y in pellets:
-            pygame.draw.circle(screen, (235, 215, 170),
-                               (origin_x + x * cell + cell // 2, origin_y + y * cell + cell // 2), 2)
+            pygame.draw.circle(
+                screen,
+                (235, 215, 170),
+                (
+                    origin_x + x * cell + cell // 2,
+                    origin_y + y * cell + cell // 2,
+                ),
+                2,
+            )
         for index, (name, (x, y)) in enumerate(ghosts.items()):
-            pygame.draw.circle(screen, ghost_colors[index % len(ghost_colors)],
-                               (origin_x + x * cell + cell // 2, origin_y + y * cell + cell // 2), cell // 3)
+            pygame.draw.circle(
+                screen,
+                ghost_colors[index % len(ghost_colors)],
+                (
+                    origin_x + x * cell + cell // 2,
+                    origin_y + y * cell + cell // 2,
+                ),
+                cell // 3,
+            )
         x, y = player
-        pygame.draw.circle(screen, (255, 225, 40),
-                           (origin_x + x * cell + cell // 2, origin_y + y * cell + cell // 2), cell // 3)
-        screen.blit(small.render("Arrows/WASD: move   R: regenerate   Esc: quit", True, (180, 190, 210)),
-                    (16, origin_y + height * cell + 12))
+        pygame.draw.circle(
+            screen,
+            (255, 225, 40),
+            (
+                origin_x + x * cell + cell // 2,
+                origin_y + y * cell + cell // 2,
+            ),
+            cell // 3,
+        )
+        screen.blit(
+            small.render(
+                "Arrows/WASD: move   R: regenerate   Esc: quit",
+                True,
+                (180, 190, 210),
+            ),
+            (16, origin_y + height * cell + 12),
+        )
         pygame.display.flip()
         if args.snapshot:
             pygame.image.save(screen, str(args.snapshot))
-            print(f"Initial frame saved: {args.snapshot}; player={player}; ghosts={ghosts}")
+            print(
+                f"Initial frame saved: {args.snapshot}; "
+                f"player={player}; ghosts={ghosts}"
+            )
             running = False
         clock.tick(60)
     pygame.quit()

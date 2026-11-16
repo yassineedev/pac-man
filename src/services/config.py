@@ -29,7 +29,7 @@ class ConfigService:
         """only read a file and return it as a text
         """
         try:
-            with open(file_path, 'r', encoding='utf-8')as file:
+            with open(file_path, 'r', encoding='utf-8') as file:
                 data = file.read()
         except FileNotFoundError as e:
             print(f"Error: no config file provided: {e}")
@@ -60,7 +60,8 @@ class ConfigService:
         if bounds is None:
             return True
         low, high = bounds
-        return low <= value <=high
+        number = int(value)
+        return low <= number <= high
 
     def load_config(self, file_path: str) -> GameConfig:
         """Read settings from a file."""

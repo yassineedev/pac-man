@@ -7,7 +7,7 @@ from src.services.pathfinding import BFS
 from src.shared.game_data import Position
 
 
-def test_bfs(width: int, height: int, seed: int) -> None:
+def check_bfs(width: int, height: int, seed: int) -> None:
     """Test BFS on a generated maze."""
 
     maze = Maze(width, height)
@@ -116,12 +116,22 @@ def test_no_path() -> None:
     print("✅ No path: PASS")
 
 
+def test_bfs() -> None:
+    """Test BFS with different maze sizes and seeds."""
+    maze_values = [
+        (15, 15, 42),
+        (20, 20, 42),
+        (45, 45, 42),
+        (45, 30, 123),
+    ]
+
+    for width, height, seed in maze_values:
+        check_bfs(width, height, seed)
+
+
 if __name__ == "__main__":
     # Different maze sizes
-    test_bfs(15, 15, 42)
-    test_bfs(20, 20, 42)
-    test_bfs(45, 45, 42)
-    test_bfs(45, 30, 123)
+    test_bfs()
 
     # Special cases
     test_same_position()

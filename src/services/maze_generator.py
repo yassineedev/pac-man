@@ -2,16 +2,20 @@
 from mazegenerator import MazeGenerator
 
 
-
 class MazeGeneratorError(Exception):
-    def __init__(self, *args):
+    def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
 
 class MazeGeneratorPanel:
     """Use the external maze generator."""
 
-    def __init__(self, width: int = 15, height: int = 15, seed: int = 42) -> None:
+    def __init__(
+            self,
+            width: int = 15,
+            height: int = 15,
+            seed: int = 42
+    ) -> None:
         self.width = width
         self.height = height
         self.seed = seed

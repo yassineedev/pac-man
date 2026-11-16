@@ -6,9 +6,9 @@ from src.shared.game_data import Direction, GameData
 class Game:
     """Keep all game objects and game rules together."""
 
-    def __init__(self, ) -> None:
+    def __init__(self) -> None:
         """Here in the constractor we should connect all the backend classes"""
-        self.parsing = 
+        self.parsing = None
 
     def start_game(self) -> None:
         """Start a new game."""
@@ -32,7 +32,7 @@ class Game:
 
     def get_game_data(self) -> GameData:
         """Give the UI the data it needs."""
-        pass
+        raise NotImplementedError("Game data is not implemented yet.")
 
     def use_cheat(self, cheat_name: str) -> None:
         """Use a cheat for testing."""

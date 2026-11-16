@@ -16,7 +16,7 @@ class HighScoreService:
 
     def load_scores(self) -> list[HighScore]:
         """Read saved scores."""
-        pass
+        return []
 
     def save_score(self, name: str, score: int) -> None:
         """Save a player's score."""
@@ -24,4 +24,4 @@ class HighScoreService:
 
     def get_top_scores(self) -> list[HighScore]:
         """Get the ten best scores."""
-        pass
+        return []

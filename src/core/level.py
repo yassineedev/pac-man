@@ -17,4 +17,4 @@ class LevelManager:
 
     def is_level_done(self) -> bool:
         """Check if the player finished this level."""
-        pass
+        return False
