@@ -8,10 +8,10 @@ from src.models.maze import Maze
 def test_player() -> None:
     """Test Player initialization, movement, and reset."""
 
-    maze = Maze(15, 15)
-    maze.generate(seed=42)
+    maze = Maze(3, 3)
+    maze.grid = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
-    start = Position(0, 0)
+    start = Position(1, 1)
     player = Player(start, Direction.RIGHT)
 
     # Test 1: Initialization
@@ -26,21 +26,13 @@ def test_player() -> None:
     print("✅ Choose move: PASS")
 
     # Test 3: Movement
-    old_position = player.position
-
     player.move(Direction.RIGHT, maze)
+    assert player.position == Position(2, 1)
+    assert player.direction == Direction.RIGHT
 
-    if maze.can_move(
-        old_position.x,
-        old_position.y,
-        Direction.RIGHT.value
-    ):
-        assert player.position == Position(
-            old_position.x + 1,
-            old_position.y
-        )
-    else:
-        assert player.position == old_position
+    # The maze boundary prevents movement outside the grid.
+    player.move(Direction.RIGHT, maze)
+    assert player.position == Position(2, 1)
 
     print("✅ Player movement: PASS")
 

@@ -1,90 +1,119 @@
-import dataclasses
+"""Load and validate the game configuration."""
+
 import json
-import sys
 from dataclasses import dataclass
 from typing import Any
 
 
-# a dict to compare the boundary values to the one set in config file
-BOUNDS: dict[str, tuple[int, int]] = {
-    "levels": (10, 100),
-    "width": (14, 100),
-    "height": (10, 100),
-    "seed": (1, 1000)
-}
+@dataclass(frozen=True)
+class LevelConfig:
+    """Settings for one level."""
+
+    width: int
+    height: int
+    seed: int
+    level_max_time: int
 
 
-@dataclass
+@dataclass(frozen=True)
 class GameConfig:
-    """Settings used by the game."""
-    levels: int = 10
-    width: int = 25
-    height: int = 25
-    seed: int = 42
+    """All settings used by the game engine."""
+
+    highscore_filename: str
+    levels: tuple[LevelConfig, ...]
+    lives: int
+    pacgum: int
+    points_per_pacgum: int
+    points_per_super_pacgum: int
+    points_per_ghost: int
 
 
 class ConfigService:
-    """Read and check the game settings."""
+    """Read comments, parse JSON, and validate game settings."""
+
     def _read_file(self, file_path: str) -> str:
-        """only read a file and return it as a text
-        """
-        try:
-            with open(file_path, 'r', encoding='utf-8') as file:
-                data = file.read()
-        except FileNotFoundError as e:
-            print(f"Error: no config file provided: {e}")
-            sys.exit(1)
-        except Exception as e:
-            print(f"Error: {e}")
-            sys.exit(1)
-        return data
+        """Return the configuration file contents."""
+        with open(file_path, "r", encoding="utf-8") as file:
+            return file.read()
 
     def _strip_comments(self, data: str) -> str:
-        '''strip comments
-        '''
-        cleaned_data = []
-        data_lst = data.splitlines()  # returns a list of lines
-        for line in data_lst:
-            tmp_line = line.lstrip()
-            if tmp_line.startswith("#") or tmp_line.startswith("//"):
-                cleaned_data.append("")
+        """Remove full-line comments before reading JSON."""
+        lines = []
+        for line in data.splitlines():
+            stripped_line = line.lstrip()
+            if stripped_line.startswith("#"):
+                lines.append("")
+            elif stripped_line.startswith("//"):
+                lines.append("")
             else:
-                cleaned_data.append(line)
-        return "\n".join(cleaned_data)
+                lines.append(line)
+        return "\n".join(lines)
 
-    def _check_config(self, name: str, value: Any) -> bool:
-        """Check that settings are valid."""
+    def _read_integer(
+        self,
+        values: dict[str, Any],
+        name: str,
+        default: int,
+        minimum: int = 0,
+    ) -> int:
+        """Read one integer or return its safe default."""
+        value = values.get(name, default)
         if isinstance(value, bool) or not isinstance(value, int):
-            return False
-        bounds = BOUNDS.get(name)
-        if bounds is None:
-            return True
-        low, high = bounds
-        number = int(value)
-        return low <= number <= high
+            return default
+        if value < minimum:
+            return default
+        return value
+
+    def _parse_level(
+        self,
+        values: dict[str, Any],
+        default_seed: int,
+    ) -> LevelConfig:
+        """Parse one level object."""
+        return LevelConfig(
+            width=self._read_integer(values, "width", 25, 14),
+            height=self._read_integer(values, "height", 25, 10),
+            seed=self._read_integer(values, "seed", default_seed, 1),
+            level_max_time=self._read_integer(
+                values, "level_max_time", 90, 1
+            ),
+        )
 
     def load_config(self, file_path: str) -> GameConfig:
-        """Read settings from a file."""
-        data = self._read_file(file_path)
-        cleaned_text = self._strip_comments(data)
-        try:
-            json_data = json.loads(cleaned_text)
-        except json.JSONDecodeError as e:
-            print(f"Invalid json format: {e}")
-            sys.exit(1)
-        if not isinstance(json_data, dict):
-            print("incorrect format..")
-            sys.exit(1)
-        config = GameConfig()
-        for field in dataclasses.fields(GameConfig):
-            name = field.name
-            if name not in json_data:
-                print(f"the setting infos of: {name} aren't provided")
-                # the defaults are already kept no need to reset them
-                continue
-            value = json_data[name]
-            if self._check_config(name, value):
-                setattr(config, field.name, value)
-            else:
-                print(f"invalid value provided for this setting: {name}")
-        return config
+        """Parse a file and return validated game settings."""
+        data = self._strip_comments(self._read_file(file_path))
+        parsed = json.loads(data)
+        if not isinstance(parsed, dict):
+            raise ValueError("The configuration root must be an object.")
+
+        levels_data = parsed.get("levels", [])
+        if not isinstance(levels_data, list) or not levels_data:
+            levels_data = [{}]
+
+        levels = []
+        for index, level_data in enumerate(levels_data):
+            if not isinstance(level_data, dict):
+                level_data = {}
+            levels.append(self._parse_level(level_data, index + 1))
+
+        highscore_filename = parsed.get(
+            "highscore_filename", "data/highscores.json"
+        )
+        if not isinstance(highscore_filename, str) or not highscore_filename:
+            highscore_filename = "data/highscores.json"
+
+        return GameConfig(
+            highscore_filename=highscore_filename,
+            levels=tuple(levels),
+            lives=self._read_integer(parsed, "lives", 3, 1),
+            pacgum=self._read_integer(parsed, "pacgum", 42, 0),
+            points_per_pacgum=self._read_integer(
+                parsed, "points_per_pacgum", 10, 0
+            ),
+            points_per_super_pacgum=self._read_integer(
+                parsed, "points_per_super_pacgum", 50, 0
+            ),
+            points_per_ghost=self._read_integer(
+                parsed, "points_per_ghost", 200, 0
+            ),
+        )

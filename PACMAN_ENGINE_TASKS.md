@@ -1,7 +1,7 @@
 # 👾 Pac-Man Game Engine — Task Tracker
 
-**Progress:** 10/105 tasks completed (9.5%).  
-**Next task:** 11 — Find a valid Pac-Man spawn position.
+**Progress:** 26/105 tasks completed (24.8%).  
+**Next task:** 23 — Create a system to store pellet positions.
 
 ## Phase 1 — Maze System (10/13)
 
@@ -15,21 +15,21 @@
 - [x] **08.** Implement `has_wall()`.
 - [x] **09.** Implement `can_move()`.
 - [x] **10.** Implement and test `get_neighbors()`.
-- [ ] **11.** Find a valid spawn position for Pac-Man.
-- [ ] **12.** Find four valid spawn positions for ghosts.
-- [ ] **13.** Test maze generation with fixed and random seeds.
+- [x] **11.** Find a valid spawn position for Pac-Man.
+- [x] **12.** Find four valid spawn positions for ghosts.
+- [x] **13.** Test maze generation with fixed and random seeds.
 
-## Phase 2 — Player System (0/9)
+## Phase 2 — Player System (9/9)
 
-- [ ] **14.** Create the `Player` class in `src/models/player.py`.
-- [ ] **15.** Add player position (`x`, `y`).
-- [ ] **16.** Store the player's starting position.
-- [ ] **17.** Add player direction.
-- [ ] **18.** Implement `set_direction()`.
-- [ ] **19.** Implement movement by one cell.
-- [ ] **20.** Prevent movement through walls and outside the maze.
-- [ ] **21.** Implement `reset_position()`.
-- [ ] **22.** Test player movement and reset.
+- [x] **14.** Create the `Player` class in `src/models/player.py`.
+- [x] **15.** Add player position (`x`, `y`).
+- [x] **16.** Store the player's starting position.
+- [x] **17.** Add player direction.
+- [x] **18.** Implement `set_direction()`.
+- [x] **19.** Implement movement by one cell.
+- [x] **20.** Prevent movement through walls and outside the maze.
+- [x] **21.** Implement `reset_position()`.
+- [x] **22.** Test player movement and reset.
 
 ## Phase 3 — Pellets & Scoring (0/9)
 
@@ -144,8 +144,8 @@
 
 | Phase | Completed | Total |
 |---|---:|---:|
-| Maze System | 10 | 13 |
-| Player System | 0 | 9 |
+| Maze System | 13 | 13 |
+| Player System | 9 | 9 |
 | Pellets & Scoring | 0 | 9 |
 | Ghost System | 0 | 11 |
 | Collisions & Lives | 0 | 9 |

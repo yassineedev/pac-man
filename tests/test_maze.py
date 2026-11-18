@@ -125,5 +125,24 @@ def test_get_neighbors() -> None:
     print("✅ get_neighbors tests passed!")
 
 
+def test_generate_multiple_seeds() -> None:
+    """Test that several seeds create usable maze grids."""
+    for seed in (0, 1, 42, 99, 12345):
+        maze = Maze(15, 15)
+        maze.generate(seed=seed)
+
+        assert len(maze.grid) == maze.height
+        assert all(len(row) == maze.width for row in maze.grid)
+        assert all(0 <= cell <= 15 for row in maze.grid for cell in row)
+
+        open_cells = [
+            (x, y)
+            for y in range(maze.height)
+            for x in range(maze.width)
+            if maze.get_neighbors(x, y)
+        ]
+        assert open_cells
+
+
 if __name__ == "__main__":
     test_get_neighbors()
