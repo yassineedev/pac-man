@@ -1,6 +1,6 @@
 """The Pac-Man player."""
 
-from src.shared.game_data import Direction, Position
+from src.shared.game_data import Direction, Position, PlayerData
 from .character import Character
 
 
@@ -32,3 +32,10 @@ class Player(Character):
     def return_to_start(self) -> None:
         """Move the player back to the start."""
         self.reset_position()
+
+    def player_data(self) -> PlayerData:
+        """return player data"""
+        return PlayerData(
+            position=self.position,
+            Direction=self.direction
+        )

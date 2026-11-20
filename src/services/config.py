@@ -33,8 +33,11 @@ class ConfigService:
 
     def _read_file(self, file_path: str) -> str:
         """Return the configuration file contents."""
-        with open(file_path, "r", encoding="utf-8") as file:
-            return file.read()
+        try:
+            with open(file_path, "r", encoding="utf-8") as file:
+                return file.read()
+        except OSError:
+            return "{}"
 
     def _strip_comments(self, data: str) -> str:
         """Remove full-line comments before reading JSON."""
@@ -82,11 +85,16 @@ class ConfigService:
     def load_config(self, file_path: str) -> GameConfig:
         """Parse a file and return validated game settings."""
         data = self._strip_comments(self._read_file(file_path))
-        parsed = json.loads(data)
+        try:
+            parsed = json.loads(data)
+        except json.JSONDecodeError:
+            parsed = {}
         if not isinstance(parsed, dict):
-            raise ValueError("The configuration root must be an object.")
+            parsed = {}
 
-        levels_data = parsed.get("levels", [])
+        # ``levels`` is the documented key. ``level`` is also accepted
+        # because the subject describes a level array in the singular.
+        levels_data = parsed.get("levels", parsed.get("level", []))
         if not isinstance(levels_data, list) or not levels_data:
             levels_data = [{}]
 

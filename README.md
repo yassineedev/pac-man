@@ -30,3 +30,41 @@ This is only the project skeleton. Game logic is not ready.
 ## To finish
 
 Add the full subject requirements, game rules, tests, and packaging steps.
+
+## Configuration
+
+The game reads `config.json`. Lines starting with `#` are comments and are
+ignored. Full-line `//` comments are also accepted.
+
+Global settings are stored once:
+
+- `highscore_filename`: JSON file used to store high scores.
+- `lives`: starting number of lives.
+- `pacgum`: number of normal pacgums requested for a level.
+- `points_per_pacgum`: points for a normal pacgum.
+- `points_per_super_pacgum`: points for a power pacgum.
+- `points_per_ghost`: points for eating a weak ghost.
+
+The `levels` array stores settings for each level. Each level has its own:
+
+- `width`: maze width.
+- `height`: maze height.
+- `seed`: maze generation seed.
+- `level_max_time`: time limit in seconds for that level.
+
+Example:
+
+```json
+{
+  "highscore_filename": "data/highscores.json",
+  "lives": 3,
+  "pacgum": 42,
+  "points_per_pacgum": 10,
+  "points_per_super_pacgum": 50,
+  "points_per_ghost": 200,
+  "levels": [
+    {"width": 25, "height": 25, "seed": 42, "level_max_time": 90},
+    {"width": 25, "height": 25, "seed": 43, "level_max_time": 90}
+  ]
+}
+```
