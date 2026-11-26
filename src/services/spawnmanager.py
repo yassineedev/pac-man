@@ -2,6 +2,7 @@
 
 from src.models.maze import Maze
 from src.shared.game_data import Position
+from src.shared.errors import BackendError
 
 
 class SpawnManager:
@@ -73,7 +74,7 @@ class SpawnManager:
                     continue
                 return Position(x, y)
 
-        return Position(middle_x, middle_y)
+        raise BackendError("I could not find a player spawn position.")
 
     def find_ghost_spawn(
             self,
@@ -111,6 +112,8 @@ class SpawnManager:
             ghosts[f"ghost_{number}"] = position
             used_positions.add(position)
 
+        if len(ghosts) != 4:
+            raise BackendError("I could not find four ghost positions.")
         return ghosts
 
     def find_free_position(self, used_positions: set[Position]) -> Position:
@@ -124,4 +127,4 @@ class SpawnManager:
                     continue
                 return position
 
-        return Position(0, 0)
+        raise BackendError("I could not find a free spawn position.")

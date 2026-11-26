@@ -2,6 +2,7 @@ from typing import List, Set, Tuple, Union
 
 from src.models.maze import Maze
 from src.shared.game_data import Position
+from src.shared.errors import BackendError
 
 
 class PacgumManager:
@@ -63,25 +64,31 @@ class PacgumManager:
 
     def eat_pacgum(self, position: Position) -> bool:
         """mark pacgum eated by delting the position from pacgums"""
+        if not isinstance(position, Position):
+            raise BackendError("The pacgum position is not valid.")
         try:
             if position in self.pacgums:
                 self.pacgums.remove(position)
                 return True
             return False
-        except (KeyError, RuntimeError):
-            return False
+        except (KeyError, RuntimeError) as error:
+            raise BackendError("I could not collect the pacgum.") from error
 
     def eat_power_pacgums(self, position: Position) -> bool:
         """
         mark powerfull pacgum eated.
         by delting the position from power_pacgum"""
+        if not isinstance(position, Position):
+            raise BackendError("The power pacgum position is not valid.")
         try:
             if position in self.power_pacgum:
                 self.power_pacgum.remove(position)
                 return True
             return False
-        except (KeyError, RuntimeError):
-            return False
+        except (KeyError, RuntimeError) as error:
+            raise BackendError(
+                "I could not collect the power pacgum."
+            ) from error
 
     def all_pacgums_eaten(self) -> bool:
         """all pac gums earted means the level is done"""

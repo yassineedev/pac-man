@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from src.shared.game_data import Direction, Position
 from src.models.maze import Maze
+from src.shared.errors import BackendError
 
 
 class Character(ABC):
@@ -19,6 +20,10 @@ class Character(ABC):
 
     def move(self, direction: Direction, maze: Maze) -> None:
         """Move one cell if there is no wall."""
+        if not isinstance(direction, Direction):
+            raise BackendError("The character direction is not valid.")
+        if not isinstance(maze, Maze):
+            raise BackendError("The character has no valid maze.")
         x, y = self.position.x, self.position.y
 
         if not maze.can_move(x, y, direction.value):

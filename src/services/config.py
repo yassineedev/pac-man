@@ -4,6 +4,8 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
+from src.shared.errors import BackendError
+
 
 @dataclass(frozen=True)
 class LevelConfig:
@@ -37,7 +39,9 @@ class ConfigService:
             with open(file_path, "r", encoding="utf-8") as file:
                 return file.read()
         except OSError:
-            return "{}"
+            raise BackendError(
+                "I could not read the config file."
+            ) from None
 
     def _strip_comments(self, data: str) -> str:
         """Remove full-line comments before reading JSON."""
@@ -58,13 +62,22 @@ class ConfigService:
         name: str,
         default: int,
         minimum: int = 0,
+        maximum: int | None = None,
     ) -> int:
         """Read one integer or return its safe default."""
+        if name not in values:
+            raise BackendError(f"The config is missing '{name}'.")
         value = values.get(name, default)
         if isinstance(value, bool) or not isinstance(value, int):
-            return default
+            raise BackendError(f"'{name}' must be an integer.")
         if value < minimum:
-            return default
+            raise BackendError(
+                f"'{name}' must be at least {minimum}."
+            )
+        if maximum is not None and value > maximum:
+            raise BackendError(
+                f"'{name}' must be at most {maximum}."
+            )
         return value
 
     def _parse_level(
@@ -74,8 +87,8 @@ class ConfigService:
     ) -> LevelConfig:
         """Parse one level object."""
         return LevelConfig(
-            width=self._read_integer(values, "width", 25, 14),
-            height=self._read_integer(values, "height", 25, 10),
+            width=self._read_integer(values, "width", 7, 7, 25),
+            height=self._read_integer(values, "height", 7, 7, 25),
             seed=self._read_integer(values, "seed", default_seed, 1),
             level_max_time=self._read_integer(
                 values, "level_max_time", 90, 1
@@ -88,27 +101,31 @@ class ConfigService:
         try:
             parsed = json.loads(data)
         except json.JSONDecodeError:
-            parsed = {}
+            raise BackendError("The config file has invalid JSON.") from None
         if not isinstance(parsed, dict):
-            parsed = {}
+            raise BackendError("The config file must contain an object.")
 
         # ``levels`` is the documented key. ``level`` is also accepted
         # because the subject describes a level array in the singular.
         levels_data = parsed.get("levels", parsed.get("level", []))
         if not isinstance(levels_data, list) or not levels_data:
-            levels_data = [{}]
+            raise BackendError("The config must contain a levels list.")
 
         levels = []
         for index, level_data in enumerate(levels_data):
             if not isinstance(level_data, dict):
-                level_data = {}
+                raise BackendError(
+                    f"Level {index + 1} must be an object."
+                )
             levels.append(self._parse_level(level_data, index + 1))
 
-        highscore_filename = parsed.get(
-            "highscore_filename", "data/highscores.json"
-        )
+        if "highscore_filename" not in parsed:
+            raise BackendError("The config is missing 'highscore_filename'.")
+        highscore_filename = parsed["highscore_filename"]
         if not isinstance(highscore_filename, str) or not highscore_filename:
-            highscore_filename = "data/highscores.json"
+            raise BackendError(
+                "'highscore_filename' must be a non-empty string."
+            )
 
         return GameConfig(
             highscore_filename=highscore_filename,

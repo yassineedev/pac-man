@@ -6,6 +6,7 @@ from src.models.character import Character
 from src.models.maze import Maze
 from src.services.pathfinding import BFS
 from src.shared.game_data import Direction, GhostStatu, Position
+from src.shared.errors import BackendError
 
 
 class Ghost(Character):
@@ -18,6 +19,8 @@ class Ghost(Character):
         self.maze = maze
         self.pathfinder = BFS()
         self.state = GhostStatu.NORMAL
+        self.respawn_delay = 2
+        self.respawn_time_left = 0
 
     def make_weak(self) -> None:
         """Make the ghost weak."""
@@ -31,11 +34,28 @@ class Ghost(Character):
     def get_eaten(self) -> None:
         """Set the ghost as eaten."""
         self.state = GhostStatu.EATEN
+        self.respawn_time_left = self.respawn_delay
 
     def reset(self) -> None:
         """Put the ghost back at its first position."""
         self.return_to_start()
         self.make_normal()
+
+    def update_respawn(self, time_passed: float) -> None:
+        """Count down the eaten state and restore the ghost."""
+        if self.state != GhostStatu.EATEN:
+            return
+
+        if self.position != self.start_position:
+            self.position = self.start_position
+
+        if time_passed < 0:
+            return
+
+        self.respawn_time_left -= time_passed
+        if self.respawn_time_left <= 0:
+            self.respawn_time_left = 0
+            self.make_normal()
 
     def get_valid_directions(self) -> list[Direction]:
         """Return directions where the ghost can move."""
@@ -80,8 +100,8 @@ class Ghost(Character):
                 self.maze,
             )
             return self.get_direction_from_path(path)
-        except (ValueError, IndexError, TypeError):
-            return self.direction
+        except (ValueError, IndexError, TypeError) as error:
+            raise BackendError("The ghost could not find a path.") from error
 
     def get_distance(self, position: Position, target: Position) -> int:
         """Return a simple distance between two positions."""

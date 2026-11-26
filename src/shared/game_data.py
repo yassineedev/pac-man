@@ -48,3 +48,11 @@ class GameData:
     time_left: float
     state: str
     cheat_mode: bool
+    player_move_time: float = 0.2
+    ghost_move_time: float = 0.5
+    power_mode: bool = False
+    power_mode_time_left: float = 0.0
+    invincible: bool = False
+    ghosts_frozen: bool = False
+    fast_player: bool = False
+    highscores: tuple[tuple[str, int], ...] = ()

@@ -1,5 +1,7 @@
 """Manage the game score."""
 
+from src.shared.errors import BackendError
+
 
 class ScoreManager:
     """Keep the player's score."""
@@ -11,6 +13,16 @@ class ScoreManager:
         points_per_ghost: int
     ) -> None:
         """init the needed attrubites inside score manager"""
+        points = (
+            points_per_pacgum,
+            points_per_super_pacgum,
+            points_per_ghost,
+        )
+        if any(isinstance(value, bool) or not isinstance(value, int)
+               for value in points):
+            raise BackendError("Score values must be integers.")
+        if any(value < 0 for value in points):
+            raise BackendError("Score values cannot be negative.")
         self.total_score = 0
         self.normal_pg_point = points_per_pacgum
         self.power_pg_point = points_per_super_pacgum

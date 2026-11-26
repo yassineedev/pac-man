@@ -68,3 +68,14 @@ Example:
   ]
 }
 ```
+
+## Highscores
+
+Highscores are stored in the JSON file from `highscore_filename`.
+The default file is `data/highscores.json`.
+
+The game loads the file when it starts and keeps the ten highest scores.
+When a game ends, the player can enter a name and save the final score.
+Names can have up to 10 letters, numbers, or spaces. Scores must be
+non-negative integers. Missing or broken highscore files are treated as an
+empty list. Saving errors are reported to the game.
